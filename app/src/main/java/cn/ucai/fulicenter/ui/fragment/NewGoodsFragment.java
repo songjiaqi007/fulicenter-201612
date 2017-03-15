@@ -156,7 +156,22 @@ public class NewGoodsFragment extends Fragment {
 
 
     private void initView() {
+        srl.setColorSchemeColors(
+                getResources().getColor(R.color.google_blue),
+                getResources().getColor(R.color.google_green),
+                getResources().getColor(R.color.google_red),
+                getResources().getColor(R.color.google_yellow));
         gm = new GridLayoutManager(getContext(), I.COLUM_NUM);
+        gm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (position ==mList.size()) {
+                    return I.COLUM_NUM;
+                }
+                return 1;
+            }
+        });
+
         mRvGoods.setLayoutManager(gm);
         mRvGoods.setHasFixedSize(true);
         mainActivity = (MainActivity) getActivity();
