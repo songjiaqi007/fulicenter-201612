@@ -1,5 +1,6 @@
 package cn.ucai.fulicenter.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,7 +28,6 @@ import cn.ucai.fulicenter.model.net.OnCompleteListener;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.model.utils.ResultUtils;
-import cn.ucai.fulicenter.ui.activity.MainActivity;
 import cn.ucai.fulicenter.ui.adapter.NewGoodsAdapter;
 import cn.ucai.fulicenter.ui.view.SpaceItemDecoration;
 
@@ -49,8 +49,9 @@ public class NewGoodsFragment extends Fragment {
     NewGoodsAdapter mAdapter;
     INewGoodsModel model = new NewGoodsModel();
     SwipeRefreshLayout mSwipeRefreshLayout;
-    MainActivity mainActivity;
+    Context mainActivity;
     int pageId = 1;
+    int catId = 0;
     GridLayoutManager gm;
     @BindView(R.id.tvRefreshHint)
     TextView mtvRefreshHint;
@@ -62,7 +63,7 @@ public class NewGoodsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_new_goods, container, false);
+        View layout = inflater.inflate(R.layout.item_new_goods, container, false);
         bind = ButterKnife.bind(this, layout);
         mSwipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.srl);
         return layout;
@@ -73,6 +74,7 @@ public class NewGoodsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         model = new NewGoodsModel();
+        catId = getActivity().getIntent().getIntExtra(I.NewAndBoutiqueGoods.CAT_ID, catId);
         initView();
         initData();
         setListener();
@@ -81,7 +83,7 @@ public class NewGoodsFragment extends Fragment {
     }
 
     private void downloadNewGoods(int pageId, final int action) {
-        mModel.loadData(mainActivity, pageId, new OnCompleteListener<NewGoodsBean[]>() {
+        mModel.loadData(mainActivity,catId, pageId, new OnCompleteListener<NewGoodsBean[]>() {
             @Override
             public void onSuccess(NewGoodsBean[] result) {
                 Log.d(TAG, "onSuccess: " + action);
@@ -174,7 +176,7 @@ public class NewGoodsFragment extends Fragment {
 
         mRvGoods.setLayoutManager(gm);
         mRvGoods.setHasFixedSize(true);
-        mainActivity = (MainActivity) getActivity();
+        mainActivity = getActivity();
         mLayoutManager = new GridLayoutManager(getActivity(), I.COLUM_NUM);
         mRvGoods.setLayoutManager(mLayoutManager);
         mRvGoods.setHasFixedSize(true);
@@ -184,7 +186,7 @@ public class NewGoodsFragment extends Fragment {
     }
 
     private void initData() {
-        model.loadData(getContext(), pageId, new OnCompleteListener<NewGoodsBean[]>() {
+        model.loadData(getContext(),catId,pageId, new OnCompleteListener<NewGoodsBean[]>() {
             @Override
             public void onSuccess(NewGoodsBean[] result) {
                 L.e(TAG, "initData,result = " + result);
