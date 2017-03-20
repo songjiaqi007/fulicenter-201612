@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.model.bean.CategoryChildBean;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
+import cn.ucai.fulicenter.ui.activity.CategoryChileActivity;
 import cn.ucai.fulicenter.ui.view.MFGT;
 
 public class CatFilterAdapter extends BaseAdapter {
@@ -74,10 +75,12 @@ public class CatFilterAdapter extends BaseAdapter {
             final CategoryChildBean child = mlist.get(childPostion);
             mTvCategoryChildName.setText(child.getName());
             ImageLoader.downloadImg(mContext, mIvCategoryChildThumb, child.getImageUrl());
-            mLayoutCategoryChild.setOnClickListener(new View.OnClickListener() {
+            mLayoutCategoryChild.setOnClickListener(    new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //点击item跳转到分类二级页面，并finish
                     MFGT.gotoCategoryChild(mContext, child.getId(), groupName, mlist);
+                    ((CategoryChileActivity)mContext).finish();
                 }
             });
         }

@@ -81,6 +81,9 @@ public class CatChildFilterButton extends android.support.v7.widget.AppCompatBut
         list = l;
 
         gv = new GridView(mContext);
+        gv.setHorizontalSpacing(10);
+        gv.setVerticalSpacing(10);
+        gv.setNumColumns(GridView.AUTO_FIT);
         Log.d("mingYue", "initView++++++: " + list.toString());
         adapter = new CatFilterAdapter(mContext, list, groupName);
         gv.setAdapter(adapter);

@@ -13,7 +13,9 @@ import cn.ucai.fulicenter.model.bean.CategoryChildBean;
 import cn.ucai.fulicenter.ui.activity.BoutiqueChileActivity;
 import cn.ucai.fulicenter.ui.activity.CategoryChileActivity;
 import cn.ucai.fulicenter.ui.activity.GoodsDetailsActivity;
+import cn.ucai.fulicenter.ui.activity.LoginActivity;
 import cn.ucai.fulicenter.ui.activity.MainActivity;
+import cn.ucai.fulicenter.ui.activity.RegisterActivity;
 
 /**
  * Created by liuning on 2017/3/16.
@@ -59,5 +61,13 @@ public class MFGT {
         .putExtra(I.NewAndBoutiqueGoods.CAT_ID,catId)
         .putExtra(I.CategoryGroup.NAME,groupName)
         .putExtra(I.CategoryChild.DATA,list));
+    }
+
+    public static void gotoLogin(Activity activity) {
+        starActivity(activity, LoginActivity.class);
+    }
+
+    public static void gotoRegister(Activity activity) {
+        starActivity(activity, RegisterActivity.class);
     }
 }

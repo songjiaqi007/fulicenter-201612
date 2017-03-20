@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
@@ -13,9 +14,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.ui.fragment.BoutiqueFragment;
 import cn.ucai.fulicenter.ui.fragment.CategoryFragment;
 import cn.ucai.fulicenter.ui.fragment.NewGoodsFragment;
+import cn.ucai.fulicenter.ui.view.MFGT;
 
 /**
  * Created by liuning on 2017/3/14.
@@ -80,6 +83,21 @@ public class MainActivity extends AppCompatActivity {
             case R.id.category:
                 index = 2;
                 break;
+            case R.id.cart:
+                if (FuLiCenterApplication.getmUser() == null) {
+                    MFGT.gotoLogin(MainActivity.this);
+                } else {
+                    index = 3;
+                }
+
+                break;
+            case R.id.personal_center:
+                if (FuLiCenterApplication.getmUser() == null) {
+                    MFGT.gotoLogin(MainActivity.this);
+                } else {
+                    index = 4;
+                }
+                break;
         }
         setFragment();
     }
@@ -92,6 +110,18 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             currentIndex = index;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("main", "index"+index+",currentIndex"+currentIndex);
+        setRadioButton();
+
+    }
+
+    private void setRadioButton() {
+
     }
 
     @Override
