@@ -11,15 +11,7 @@ import cn.ucai.fulicenter.model.bean.User;
 
 public class FuLiCenterApplication extends Application {
     static FuLiCenterApplication instance;
-    static User mUser;
-
-    public static User getmUser() {
-        return mUser;
-    }
-
-    public static void setmUser(User mUser) {
-        FuLiCenterApplication.mUser = mUser;
-    }
+    static User currentUser;
 
     @Override
     public void onCreate() {
@@ -29,5 +21,13 @@ public class FuLiCenterApplication extends Application {
 
     public static Context getInstance() {
         return instance;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User currentUser) {
+        FuLiCenterApplication.currentUser = currentUser;
     }
 }

@@ -25,10 +25,12 @@ public class UserModel implements IUserModel {
     @Override
     public void register(Context context, String username, String nickname,String password, OnCompleteListener<String> listener) {
         OkHttpUtils utils = new OkHttpUtils(context);
-        utils.setRequestUrl(I.REQUEST_LOGIN)
-                .addParam(I.User.USER_NAME,username)
-                .addParam(I.User.PASSWORD,nickname)
+        utils.setRequestUrl(I.REQUEST_REGISTER)
+                .addParam(I.User.USER_NAME, username)
+                .addParam(I.User.PASSWORD, password)
+                .addParam(I.User.NICK, nickname)
                 .targetClass(String.class)
+                .post()
                 .execute(listener);
     }
 }

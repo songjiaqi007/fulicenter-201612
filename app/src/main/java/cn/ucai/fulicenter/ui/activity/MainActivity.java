@@ -25,6 +25,8 @@ import cn.ucai.fulicenter.ui.view.MFGT;
  */
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     @BindView(R.id.new_good)
     RadioButton newGood;
     @BindView(R.id.cart)
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     NewGoodsFragment mNewGoodsFragment;
     BoutiqueFragment mBoutiqueFragment;
     CategoryFragment mCategoryFragment;
+    RadioButton[] mRadioButtons;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,13 +58,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bind = ButterKnife.bind(this);
         initFragment();
+        initRadioButton();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fl, mNewGoodsFragment)
                 .add(R.id.fl, mBoutiqueFragment)
-                .add(R.id.fl,mCategoryFragment)
+                .add(R.id.fl, mCategoryFragment)
                 .hide(mBoutiqueFragment).hide(mCategoryFragment)
                 .show(mNewGoodsFragment)
                 .commit();
+    }
+
+    private void initRadioButton() {
+        mRadioButtons = new RadioButton[5];
+        mRadioButtons[0] = newGood;
+        mRadioButtons[1] = boutique;
+        mRadioButtons[2] = category;
+        mRadioButtons[3] = cart;
+        mRadioButtons[4] = personalCenter;
     }
 
     private void initFragment() {
@@ -84,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 index = 2;
                 break;
             case R.id.cart:
-                if (FuLiCenterApplication.getmUser() == null) {
+                if (FuLiCenterApplication.getCurrentUser() == null) {
                     MFGT.gotoLogin(MainActivity.this);
                 } else {
                     index = 3;
@@ -92,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.personal_center:
-                if (FuLiCenterApplication.getmUser() == null) {
+                if (FuLiCenterApplication.getCurrentUser() == null) {
                     MFGT.gotoLogin(MainActivity.this);
                 } else {
                     index = 4;
@@ -103,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setFragment() {
-        if (currentIndex!=index) {
+        if (currentIndex != index) {
             getSupportFragmentManager().beginTransaction()
                     .hide(mFragments[currentIndex])
                     .show(mFragments[index])
@@ -115,14 +130,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("main", "index"+index+",currentIndex"+currentIndex);
+        Log.i("main", "index" + index + ",currentIndex" + currentIndex);
         setRadioButton();
 
     }
 
+    //避免跳转到登录后底部菜单显示不正确
     private void setRadioButton() {
-
+        for (int i = 0; i < mRadioButtons.length; i++) {
+            if (i == currentIndex) {
+                mRadioButtons[i].setChecked(true);
+            }
+//            else{
+//                mRadioButtons[i].setChecked(false);
+//            }
+        }
     }
+
 
     @Override
     protected void onDestroy() {
