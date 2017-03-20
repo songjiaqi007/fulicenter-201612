@@ -1,13 +1,17 @@
 package cn.ucai.fulicenter.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -15,6 +19,7 @@ import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.model.bean.NewGoodsBean;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
+import cn.ucai.fulicenter.ui.activity.GoodsDetailsActivity;
 
 /**
  * Created by liuning on 2017/3/15.
@@ -25,6 +30,7 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     ArrayList<NewGoodsBean> mList;
     boolean isMore;
     String footerText;
+    int sortBy = I.SORT_BY_ADDTIME_DESC;
 
     public void setFooterText(String footerText) {
         this.footerText = footerText;
@@ -41,6 +47,7 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public NewGoodsAdapter(Context context, ArrayList<NewGoodsBean> mList) {
         this.context = context;
         this.mList = mList;
+        isMore = true;
     }
 
     @Override
@@ -59,7 +66,7 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder parentHolder, int position) {
-        if (getItemViewType(position)==I.TYPE_FOOTER) {
+        if (getItemViewType(position) == I.TYPE_FOOTER) {
             FooterHolder holder = (FooterHolder) parentHolder;
             holder.tvFooter.setVisibility(View.VISIBLE);
             holder.tvFooter.setText(footerText);
@@ -67,11 +74,19 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         GoodsViewHolder holder = (GoodsViewHolder) parentHolder;
-        NewGoodsBean bean = mList.get(position);
+        final NewGoodsBean bean = mList.get(position);
         holder.tvGoodsName.setText(bean.getGoodsName());
         holder.tvPrice.setText(bean.getCurrencyPrice());
         ImageLoader.downloadImg(context, holder.ivGoodsThumb, bean.getGoodsThumb());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("mingYue", "onClick: +++++++++++");
+                context.startActivity(new Intent(context, GoodsDetailsActivity.class)
+                        .putExtra(I.Goods.KEY_GOODS_ID, bean.getGoodsId()));
 
+            }
+        });
     }
 
     @Override
@@ -85,6 +100,41 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return I.TYPE_FOOTER;
         }
         return I.TYPE_ITEM;
+    }
+
+    public void setSy(int sy) {
+        this.sortBy = sy;
+        sortBy();
+    }
+
+    private void sortBy() {
+        Collections.sort(mList, new Comparator<NewGoodsBean>() {
+            @Override
+            public int compare(NewGoodsBean l, NewGoodsBean r) {
+                int result = 0;
+                switch (sortBy) {
+                    case I.SORT_BY_ADDTIME_ASC:
+                        result = (int) (l.getAddTime() - r.getAddTime());
+                        break;
+                    case I.SORT_BY_ADDTIME_DESC:
+                        result = (int) (r.getAddTime() - l.getAddTime());
+                        break;
+                    case I.SORT_BY_PRICE_ASC:
+                        result = getPrice(l.getCurrencyPrice()) -getPrice(r.getCurrencyPrice());
+                        break;
+                    case I.SORT_BY_PRICE_DESC:
+                        result = getPrice(r.getCurrencyPrice()) -getPrice(l.getCurrencyPrice());
+                        break;
+                }
+                return result;
+            }
+        });
+        notifyDataSetChanged();
+    }
+
+    private int getPrice(String p) {
+        String Pstr = p.substring(p.indexOf("￥") + 1);
+        return Integer.valueOf(Pstr);
     }
 
     public void initNewGoodsList(ArrayList<NewGoodsBean> mList) {

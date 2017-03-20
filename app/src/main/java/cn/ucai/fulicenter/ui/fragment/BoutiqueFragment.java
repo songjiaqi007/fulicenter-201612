@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,20 +19,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.application.I;
-import cn.ucai.fulicenter.model.bean.BoutiqueBean;
 import cn.ucai.fulicenter.model.bean.BoutiqueBean;
 import cn.ucai.fulicenter.model.net.BoutiqueModel;
 import cn.ucai.fulicenter.model.net.IBoutiqueModel;
-import cn.ucai.fulicenter.model.net.INewGoodsModel;
-import cn.ucai.fulicenter.model.net.NewGoodsModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.model.utils.ResultUtils;
 import cn.ucai.fulicenter.ui.activity.MainActivity;
 import cn.ucai.fulicenter.ui.adapter.BoutiqueAdapter;
-import cn.ucai.fulicenter.ui.adapter.NewGoodsAdapter;
 import cn.ucai.fulicenter.ui.view.SpaceItemDecoration;
 
 /**
@@ -65,10 +59,11 @@ public class BoutiqueFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_new_goods, container, false);
+        View layout = inflater.inflate(R.layout.item_new_goods, container, false);
         bind = ButterKnife.bind(this, layout);
         mSwipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.srl);
         return layout;
+
 
     }
 
@@ -88,24 +83,15 @@ public class BoutiqueFragment extends Fragment {
             @Override
             public void onSuccess(BoutiqueBean[] result) {
                 Log.d(TAG, "onSuccess: " + action);
-                mAdapter.setMore(result != null && result.length > 0);
-                if (!mAdapter.isMore()) {
-                    if (action == ACTION_PULL_UP) {
-                    mAdapter.setFooterText("没有更多数据加载");
-                    }
-                    return;
-                }
                 mList = ResultUtils.array2List(result);
                 switch (action) {
                     case ACTION_DOWNLOAD:
                         mAdapter.initNewGoodsList(mList);
-                        mAdapter.setFooterText("加载更多数据");
                         break;
                     case ACTION_PULL_DOWN:
                         mAdapter.initNewGoodsList(mList);
                         mSwipeRefreshLayout.setRefreshing(false);
                         mtvRefreshHint.setVisibility(View.GONE);
-                        mAdapter.setFooterText("没有更多数据加载");
                         break;
 
                 }

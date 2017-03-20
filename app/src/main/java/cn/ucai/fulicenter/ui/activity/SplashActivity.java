@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.ui.view.MFGT;
 
 /**
  * Created by liuning on 2017/3/14.
