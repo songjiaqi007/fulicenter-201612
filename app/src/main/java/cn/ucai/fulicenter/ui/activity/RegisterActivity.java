@@ -61,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mTvCommonTitle.setText(R.string.register_title);
+        mTvCommonTitle.setText(R.string.register_title1);
     }
 
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,6 +16,7 @@ import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
+import cn.ucai.fulicenter.model.Dao.UserDao;
 import cn.ucai.fulicenter.model.bean.Result;
 import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.net.IUserModel;
@@ -23,6 +25,7 @@ import cn.ucai.fulicenter.model.net.UserModel;
 import cn.ucai.fulicenter.model.utils.CommonUtils;
 import cn.ucai.fulicenter.model.utils.MD5;
 import cn.ucai.fulicenter.model.utils.ResultUtils;
+import cn.ucai.fulicenter.model.utils.SharePrefrenceUtils;
 import cn.ucai.fulicenter.ui.view.MFGT;
 
 /**
@@ -68,9 +71,9 @@ public class LoginActivity extends AppCompatActivity {
                     new OnCompleteListener<String>() {
                         @Override
                         public void onSuccess(String s) {
-                            Result result = ResultUtils.getListResultFromJson(s, User.class);
+                            Result result = ResultUtils.getResultFromJson(s, User.class);
                             if (result != null) {
-                                if (result == null && result.isRetMsg()) {
+                                if (result.isRetMsg()) {
                                     User user = (User) result.getRetData();
                                     if (user != null) {
                                         loginSuccess(user);
@@ -97,8 +100,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void loginSuccess(User user) {
+    private void loginSuccess(final User user) {
         FuLiCenterApplication.setCurrentUser(user);
+        SharePrefrenceUtils.getInstance().setUserName(user.getMuserName());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean isSuccess = UserDao.getInstance(LoginActivity.this).savaUser(user);
+                Log.d("mingYue", "run: " + isSuccess);
+                if (isSuccess) {
+                    MFGT.finish(LoginActivity.this);
+                }
+            }
+        }).start();
+
     }
 
     private void showDialog() {

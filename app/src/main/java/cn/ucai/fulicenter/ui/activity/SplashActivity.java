@@ -7,13 +7,18 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.ui.view.MFGT;
+import cn.ucai.fulicenter.application.FuLiCenterApplication;
+import cn.ucai.fulicenter.model.Dao.UserDao;
+import cn.ucai.fulicenter.model.bean.User;
+import cn.ucai.fulicenter.model.utils.L;
+import cn.ucai.fulicenter.model.utils.SharePrefrenceUtils;
 
 /**
  * Created by liuning on 2017/3/14.
  */
 
 public class SplashActivity extends AppCompatActivity {
+    private static final String TAG = SplashActivity.class.getSimpleName();
     int time = 2000;
 
     @Override
@@ -28,6 +33,12 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                String userName = SharePrefrenceUtils.getInstance().getUserName();
+                if (userName!=null) {
+                    User user = UserDao.getInstance(SplashActivity.this).getUser(userName);
+                    L.e(TAG,"user="+user);
+                    FuLiCenterApplication.setCurrentUser(user);
+                }
                 startActivity(new Intent(SplashActivity.this,MainActivity.class));
                 SplashActivity.this.finish();
             }
