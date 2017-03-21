@@ -1,6 +1,5 @@
 package cn.ucai.fulicenter.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import cn.ucai.fulicenter.model.Dao.UserDao;
 import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.model.utils.SharePrefrenceUtils;
+import cn.ucai.fulicenter.ui.view.MFGT;
 
 /**
  * Created by liuning on 2017/3/14.
@@ -39,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
                     L.e(TAG,"user="+user);
                     FuLiCenterApplication.setCurrentUser(user);
                 }
-                startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                MFGT.gotoMain(SplashActivity.this);
                 SplashActivity.this.finish();
             }
         }, time);

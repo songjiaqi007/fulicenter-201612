@@ -50,7 +50,7 @@ public class DBManager {
             values.put(UserDao.USER_COLUMN_AVATAR_TYPE,user.getMavatarType());
             values.put(UserDao.USER_COLUMN_AVATAR_SUFFIX,user.getMavatarSuffix());
             values.put(UserDao.USER_COLUMN_AVATAR_TYPE,user.getMavatarLastUpdateTime());
-            long l = database.insert(UserDao.USER_TABLE_NAME, null, values);
+            long l = database.replace(UserDao.USER_TABLE_NAME, null, values);
             return l != -1;
         }
         return false;
@@ -60,7 +60,7 @@ public class DBManager {
         SQLiteDatabase database = mHelper.getReadableDatabase();
         if (database.isOpen()) {
             String sql = "select * from " + UserDao.USER_TABLE_NAME
-                    +"where "+ UserDao.USER_COLUMN_NAME+"='"+username+"'";
+                    +" where "+ UserDao.USER_COLUMN_NAME+"='"+username+"'";
             Cursor cursor = database.rawQuery(sql, null);
             while (cursor.moveToNext()) {
                 User user = new User();
