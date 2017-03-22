@@ -2,7 +2,9 @@ package cn.ucai.fulicenter.model.Dao;
 
 import android.content.Context;
 
+import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.model.bean.User;
+import cn.ucai.fulicenter.model.utils.SharePrefrenceUtils;
 
 public class UserDao {
     public static final String USER_TABLE_NAME = "t_superwechat_user";
@@ -36,4 +38,9 @@ public class UserDao {
     }
 
 
+    public void logout() {
+        FuLiCenterApplication.setCurrentUser(null);
+        SharePrefrenceUtils.getInstance().removeUser();
+        DBManager.getInstance().closeDB();
+    }
 }

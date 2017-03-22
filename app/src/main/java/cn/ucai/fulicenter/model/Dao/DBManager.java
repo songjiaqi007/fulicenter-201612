@@ -81,4 +81,8 @@ public class DBManager {
     public static void onInit(FuLiCenterApplication context) {
         mHelper = new DBOpenHelper(context);
     }
+
+    public void closeDB() {
+        mHelper.closeDB();
+    }
 }

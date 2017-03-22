@@ -1,7 +1,6 @@
 package cn.ucai.fulicenter.ui.activity;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -113,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }).start();
+        setResult(RESULT_OK);
 
     }
 
@@ -144,13 +144,6 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == I.REQUEST_CODE_REGISTER) {
-            String username = data.getStringExtra(I.User.USER_NAME);
-            mUsername.setText(username);
-        }
-    }
+
 }
 

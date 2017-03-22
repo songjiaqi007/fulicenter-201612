@@ -11,6 +11,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
+import cn.ucai.fulicenter.application.I;
+import cn.ucai.fulicenter.model.Dao.UserDao;
 import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
 import cn.ucai.fulicenter.ui.view.MFGT;
@@ -59,5 +61,12 @@ public class SettingActivity extends AppCompatActivity {
     @OnClick(backClickArea)
     public void backArea() {
         MFGT.finish(SettingActivity.this);
+    }
+
+    @OnClick(R.id.btn_logout)
+    public void logout() {
+        UserDao.getInstance(SettingActivity.this).logout();
+        MFGT.gotoLogin(SettingActivity.this,I.REQUEST_CODE_LOGIN);
+        finish();
     }
 }

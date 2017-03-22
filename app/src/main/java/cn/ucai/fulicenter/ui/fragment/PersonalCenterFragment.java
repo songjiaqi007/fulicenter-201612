@@ -43,9 +43,7 @@ public class PersonalCenterFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mUser = FuLiCenterApplication.getCurrentUser();
-        if (mUser == null) {
-            MFGT.gotoLogin(getActivity());
-        } else {
+        if (mUser != null) {
             showUserInfo();
         }
     }

@@ -1,5 +1,6 @@
 package cn.ucai.fulicenter.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
+import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.ui.fragment.BoutiqueFragment;
 import cn.ucai.fulicenter.ui.fragment.CategoryFragment;
 import cn.ucai.fulicenter.ui.fragment.NewGoodsFragment;
@@ -104,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.cart:
                 if (FuLiCenterApplication.getCurrentUser() == null) {
-                    MFGT.gotoLogin(MainActivity.this);
                 } else {
                     index = 3;
                 }
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.personal_center:
                 if (FuLiCenterApplication.getCurrentUser() == null) {
-                    MFGT.gotoLogin(MainActivity.this);
+                    MFGT.gotoLogin(MainActivity.this, I.REQUEST_CODE_LOGIN);
                 } else {
                     index = 4;
                 }
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             if (!mFragments[index].isAdded()) {
                 fragmentTransaction.add(R.id.fl, mFragments[index]);
             }
-            fragmentTransaction.show(mFragments[index]).commit();
+            fragmentTransaction.show(mFragments[index]).commitAllowingStateLoss();
             currentIndex = index;
         }
     }
@@ -136,7 +137,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("main", "index" + index + ",currentIndex" + currentIndex);
+        Log.i(TAG, "index=" + index + ",currentIndex=" + currentIndex);
+        if (currentIndex == 4) {
+            if (FuLiCenterApplication.getCurrentUser() == null){
+                index = 0;
+            }
+
+            setFragment();
+        }
         setRadioButton();
 
     }
@@ -159,6 +167,21 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (bind != null) {
             bind.unbind();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK) {
+            // 点击个人中心
+            if (requestCode==I.REQUEST_CODE_LOGIN) {
+                index = 4;
+            }
+            if (requestCode==I.REQUEST_CODE_LOGIN_FROM_CART) {
+                index = 3;
+            }
+            setFragment();
+            setRadioButton();
         }
     }
 }
