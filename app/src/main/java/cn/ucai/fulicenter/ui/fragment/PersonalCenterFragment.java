@@ -42,11 +42,22 @@ public class PersonalCenterFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initData();
+    }
+
+    private void initData() {
         mUser = FuLiCenterApplication.getCurrentUser();
         if (mUser != null) {
             showUserInfo();
         }
     }
+
 
     private void showUserInfo() {
         mTvUserName.setText(mUser.getMuserNick());
