@@ -14,10 +14,17 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.model.bean.CollectBean;
+import cn.ucai.fulicenter.model.net.GoodsModel;
+import cn.ucai.fulicenter.model.net.IGoodsModel;
+import cn.ucai.fulicenter.model.net.OnCompleteListener;
+import cn.ucai.fulicenter.model.utils.CommonUtils;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
+import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.ui.activity.GoodsDetailsActivity;
 
 /**
@@ -29,6 +36,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     ArrayList<CollectBean> mList;
     boolean isMore;
     String footerText;
+    IGoodsModel mModel = new GoodsModel();
     @BindView(R.id.ivGoodsThumb)
     ImageView mIvGoodsThumb;
     @BindView(R.id.tvGoodsName)
@@ -81,6 +89,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         CollectViewHolder holder = (CollectViewHolder) parentHolder;
+        holder.itemView.setTag(mList.get(position));
         holder.bind(position);
 
     }
@@ -97,6 +106,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mList.addAll(list);
         notifyDataSetChanged();
     }
+
     public void addData(ArrayList<CollectBean> list) {
         mList.addAll(list);
         notifyDataSetChanged();
@@ -133,6 +143,32 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
         }
+
+        @OnClick(R.id.iv_collect_del)
+        public void deleteCollect() {
+            final CollectBean goods = (CollectBean) itemView.getTag();
+            String username = FuLiCenterApplication.getCurrentUser().getMuserName();
+            mModel.deleteCollect(context, username, goods.getGoodsId(), new OnCompleteListener<CollectBean>() {
+                @Override
+                public void onSuccess(CollectBean result) {
+                    if (result != null ) {
+                        mList.remove(goods);
+                        notifyDataSetChanged();
+                    } else {
+                        CommonUtils.showLongToast(result != null ?
+                                context.getResources().getString(R.string.delete_collect_success) :
+                                context.getResources().getString(R.string.delete_collect_fail));
+
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    L.e("error=" + error);
+                    CommonUtils.showLongToast(context.getResources().getString(R.string.delete_collect_fail));
+                }
+            });
+        }
     }
 
     class FooterHolder extends RecyclerView.ViewHolder {
@@ -144,4 +180,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         }
     }
+
+
+
 }

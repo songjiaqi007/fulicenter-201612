@@ -1,5 +1,6 @@
 package cn.ucai.fulicenter.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
@@ -82,6 +83,8 @@ public class GoodsDetailsActivity extends AppCompatActivity {
             return;
         }
         modle = new GoodsModel();
+
+
     }
 
     @Override
@@ -143,6 +146,8 @@ public class GoodsDetailsActivity extends AppCompatActivity {
                             isCollects = action == I.ACTION_IS_COLLECT ? false : isCollects;
                         }
                         setCollectStatus();
+                        GoodsDetailsActivity.this.sendStickyBroadcast(new Intent("update_collect").putExtra(I.Collect.GOODS_ID, goodsId));
+
                     }
 
                     @Override

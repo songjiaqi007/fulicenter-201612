@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FuLiCenter</string>
     <string name="delete_collect_success">delete success</string>
 </resources>

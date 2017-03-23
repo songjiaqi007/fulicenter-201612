@@ -2,6 +2,7 @@ package cn.ucai.fulicenter.model.net;
 
 import android.content.Context;
 
+import cn.ucai.fulicenter.model.bean.CollectBean;
 import cn.ucai.fulicenter.model.bean.GoodsDetailsBean;
 import cn.ucai.fulicenter.model.bean.MessageBean;
 
@@ -15,4 +16,6 @@ public interface IGoodsModel {
     void collectAction(Context context, int action,int goodsId, String username,
                            OnCompleteListener<MessageBean> listener);
 
+    void deleteCollect(Context context, String username, int goodsId,
+                       OnCompleteListener<CollectBean> listener);
 }

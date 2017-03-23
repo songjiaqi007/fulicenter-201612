@@ -3,6 +3,7 @@ package cn.ucai.fulicenter.ui.activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -62,49 +63,52 @@ public class CollectsActivity extends AppCompatActivity {
         mModel = new UserModel();
         initData();
         initView();
-        downloadNewGoods(pageId, ACTION_DOWNLOAD);
+        downloadCollect(pageId, ACTION_DOWNLOAD);
         setListener();
     }
 
-    private void downloadNewGoods(int pageId, final int action) {
+    private void downloadCollect(int pageId, final int action) {
         User user = FuLiCenterApplication.getCurrentUser();
-        mModel.loadCollects(CollectsActivity.this, user.getMuserName(), pageId, I.PAGE_SIZE_DEFAULT, new OnCompleteListener<CollectBean[]>() {
-            @Override
-            public void onSuccess(CollectBean[] result) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                mTvRefresh.setVisibility(View.GONE);
-                mAdapter.setMore(true);
-                if (result != null && result.length > 0) {
-                    ArrayList<CollectBean> list = ConvertUtils.array2List(result);
-                    if (action == I.ACTION_DOWNLOAD || action == I.ACTION_PULL_DOWN) {
-                        mAdapter.initData(list);
-                    } else {
-                        //  mAdapter.addData(list);
+        mModel.loadCollects(CollectsActivity.this, user.getMuserName(), pageId, I.PAGE_SIZE_DEFAULT,
+                new OnCompleteListener<CollectBean[]>() {
+                    @Override
+                    public void onSuccess(CollectBean[] result) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        mTvRefresh.setVisibility(View.GONE);
+                        mAdapter.setMore(true);
+                        if (result != null && result.length > 0) {
+                            ArrayList<CollectBean> list = ConvertUtils.array2List(result);
+                            if (action == I.ACTION_DOWNLOAD || action == I.ACTION_PULL_DOWN) {
+                                mAdapter.initData(list);
+                            } else {
+                                mAdapter.addData(list);
+                            }
+                            if (list.size() < I.PAGE_SIZE_DEFAULT) {
+                                mAdapter.setMore(false);
+                            }
+                        } else {
+                            mAdapter.setMore(false);
+                        }
                     }
-                    if (list.size() < I.PAGE_SIZE_DEFAULT) {
+
+
+                    @Override
+                    public void onError(String error) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        mTvRefresh.setVisibility(View.GONE);
                         mAdapter.setMore(false);
+                        CommonUtils.showShortToast(error);
+                        L.e("error:" + error);
                     }
-                } else {
-                    mAdapter.setMore(false);
-                }
-            }
-
-
-            @Override
-            public void onError(String error) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                mTvRefresh.setVisibility(View.GONE);
-                mAdapter.setMore(false);
-                CommonUtils.showShortToast(error);
-                L.e("error:" + error);
-            }
-        });
+                });
     }
 
 
     private void setListener() {
         setPullDownListener();
         setPullUpListener();
+        IntentFilter filter = new IntentFilter("update_collect");
+        registerReceiver(mReceiver, filter);
     }
 
     private void setPullDownListener() {
@@ -114,6 +118,7 @@ public class CollectsActivity extends AppCompatActivity {
                 ImageLoader.release();
                 mSwipeRefreshLayout.setRefreshing(true);
                 pageId = 1;
+                downloadCollect(pageId, I.ACTION_PULL_DOWN);
             }
         });
     }
@@ -157,24 +162,12 @@ public class CollectsActivity extends AppCompatActivity {
         if (user == null) {
             finish();
         }
-        downloadNewGoods(pageId, ACTION_DOWNLOAD);
-
-        mModel.loadCollects(CollectsActivity.this, user.getMuserName(), pageId, I.PAGE_SIZE_DEFAULT,
-                new OnCompleteListener<CollectBean[]>() {
-                    @Override
-                    public void onSuccess(CollectBean[] result) {
-
-                    }
-
-                    @Override
-                    public void onError(String error) {
-
-                    }
-                });
+        downloadCollect(pageId, ACTION_DOWNLOAD);
     }
 
 
     updateCollectReceiver mReceiver;
+
 
     class updateCollectReceiver extends BroadcastReceiver {
 
@@ -189,8 +182,7 @@ public class CollectsActivity extends AppCompatActivity {
             }
         }
     }
-
-    @Override
+        @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mReceiver != null) {

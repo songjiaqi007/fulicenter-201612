@@ -25,4 +25,5 @@ public interface IUserModel {
     void loadCollects(Context context, String username, int pageId, int pageSize,
                       OnCompleteListener<CollectBean[]> listener);
 
+
 }

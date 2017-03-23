@@ -3,6 +3,7 @@ package cn.ucai.fulicenter.model.net;
 import android.content.Context;
 
 import cn.ucai.fulicenter.application.I;
+import cn.ucai.fulicenter.model.bean.CollectBean;
 import cn.ucai.fulicenter.model.bean.GoodsDetailsBean;
 import cn.ucai.fulicenter.model.bean.MessageBean;
 import cn.ucai.fulicenter.model.utils.OkHttpUtils;
@@ -37,6 +38,16 @@ public class GoodsModel implements IGoodsModel {
                 .addParam(I.Collect.USER_NAME,username)
                 .addParam(I.Collect.GOODS_ID,String.valueOf(goodsId))
                 .targetClass(MessageBean.class)
+                .execute(listener);
+    }
+
+    @Override
+    public void deleteCollect(Context context, String username, int goodsId, OnCompleteListener<CollectBean> listener) {
+        OkHttpUtils<CollectBean> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_DELETE_COLLECT)
+                .addParam(I.Collect.USER_NAME,username)
+                .addParam(I.Collect.GOODS_ID,String.valueOf(goodsId))
+                .targetClass(CollectBean.class)
                 .execute(listener);
     }
 }
