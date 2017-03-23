@@ -12,11 +12,13 @@ import cn.ucai.fulicenter.model.bean.BoutiqueBean;
 import cn.ucai.fulicenter.model.bean.CategoryChildBean;
 import cn.ucai.fulicenter.ui.activity.BoutiqueChileActivity;
 import cn.ucai.fulicenter.ui.activity.CategoryChileActivity;
+import cn.ucai.fulicenter.ui.activity.CollectsActivity;
 import cn.ucai.fulicenter.ui.activity.GoodsDetailsActivity;
 import cn.ucai.fulicenter.ui.activity.LoginActivity;
 import cn.ucai.fulicenter.ui.activity.MainActivity;
 import cn.ucai.fulicenter.ui.activity.RegisterActivity;
 import cn.ucai.fulicenter.ui.activity.SettingActivity;
+import cn.ucai.fulicenter.ui.activity.UpdateNickActivity;
 
 /**
  * Created by liuning on 2017/3/16.
@@ -82,5 +84,13 @@ public class MFGT {
     public static void gotoSettings(Activity activity) {
         starActivity(activity,SettingActivity.class);
 
+    }
+
+    public static void gotoUpdateNick(Activity activity) {
+        starActivity(activity, UpdateNickActivity.class);
+    }
+
+    public static void gotoCollectsList(Activity activity) {
+        starActivity(activity, CollectsActivity.class);
     }
 }

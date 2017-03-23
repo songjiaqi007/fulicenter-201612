@@ -148,6 +148,7 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
+
     class GoodsViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ivGoodsThumb)
         ImageView ivGoodsThumb;
@@ -161,7 +162,6 @@ public class NewGoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ButterKnife.bind(this, view);
         }
     }
-
     class FooterHolder extends RecyclerView.ViewHolder {
         TextView tvFooter;
 

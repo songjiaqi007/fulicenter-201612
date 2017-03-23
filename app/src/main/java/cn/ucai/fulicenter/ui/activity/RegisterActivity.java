@@ -52,12 +52,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
         initView();
         mContext = this;
         mModel = new UserModel();
-        super.onCreate(savedInstanceState);
     }
 
     private void initView() {

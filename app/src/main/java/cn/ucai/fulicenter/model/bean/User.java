@@ -106,7 +106,7 @@ public class User {
         StringBuffer sb = new StringBuffer(I.DOWNLOAD_AVATAR_URL);
         //name_or_hxid=qwer456&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
         sb.append(I.NAME_OR_HXID).append(I.EQUAL).append(this.getMuserName()).append(I.AND)
-                .append(I.AVATAR_TYPE).append(I.EQUAL).append(this.getMavatarType()).append(I.AND)
+                .append(I.AVATAR_TYPE).append(I.EQUAL).append(this.getMavatarPath()).append(I.AND)
                 .append(I.AVATAR_SUFFIX).append(I.EQUAL).append(this.getMavatarSuffix()).append(I.AND)
                 .append("width=200&height=200");
         return sb.toString();

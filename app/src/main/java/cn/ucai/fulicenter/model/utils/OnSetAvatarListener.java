@@ -176,6 +176,7 @@ public class OnSetAvatarListener implements View.OnClickListener {
                 break;
             case REQUEST_TAKE_PICTURE:
                 if (data != null) {
+                    Log.d("mingYue", "setAvatar: " + data);
                     startCropPhotoActivity(data.getData(), 200, 200,REQUEST_CROP_PHOTO);
                 }
                 break;
@@ -199,6 +200,7 @@ public class OnSetAvatarListener implements View.OnClickListener {
         }
         ivAvatar.setImageBitmap(avatar);
         File file = FileUtils.getAvatarPath(mActivity,mAvatarType, mUserName + ".jpg");
+        Log.d("mingYue", "saveCropAndShowAvatar: " + file.getAbsolutePath());
         if(!file.getParentFile().exists()){
             Toast.makeText(mActivity, "照片保存失败,保存的路径不存在", Toast.LENGTH_LONG).show();
             return ;
@@ -254,6 +256,7 @@ public class OnSetAvatarListener implements View.OnClickListener {
         intent.putExtra("return-data", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        Log.d("mingYue", "startCropPhotoActivity: " + intent);
         mActivity.startActivityForResult(intent,requestCode);
     }
 

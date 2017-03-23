@@ -89,13 +89,18 @@ public class PersonalCenterFragment extends Fragment {
 
     private void showUserInfo() {
         mTvUserName.setText(mUser.getMuserNick());
-        ImageLoader.setAvatar( mUser.getAvatar(),getContext(), mIvUserAvatar);
+        ImageLoader.setAvatar(mUser.getAvatar(), getContext(), mIvUserAvatar);
     }
 
 
     @OnClick({R.id.tv_center_settings, R.id.center_user_info})
     public void goSettings() {
         MFGT.gotoSettings(getActivity());
+    }
+
+    @OnClick(R.id.layout_center_collect)
+    public void onClick() {
+        MFGT.gotoCollectsList(getActivity());
     }
 }
 
