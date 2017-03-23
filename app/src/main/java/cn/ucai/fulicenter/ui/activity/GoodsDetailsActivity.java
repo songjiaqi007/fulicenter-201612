@@ -2,6 +2,7 @@ package cn.ucai.fulicenter.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.net.GoodsModel;
 import cn.ucai.fulicenter.model.net.IGoodsModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
+import cn.ucai.fulicenter.model.utils.AntiShake;
 import cn.ucai.fulicenter.model.utils.CommonUtils;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.ui.view.FlowIndicator;
@@ -32,6 +34,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     int goodsId = 0;
     IGoodsModel modle;
     GoodsDetailsBean bean;
+    AntiShake util = new AntiShake();
     boolean isCollects;
     @BindView(R.id.backClickArea)
     LinearLayout mbackClickArea;
@@ -184,7 +187,8 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.iv_good_collect)
-    public void collectGoods() {
+    public void collectGoods(View view) {
+        if(util.check(view.getId())) return;
         User user = FuLiCenterApplication.getCurrentUser();
         if (user == null) {
             MFGT.gotoLogin(GoodsDetailsActivity.this, 0);
