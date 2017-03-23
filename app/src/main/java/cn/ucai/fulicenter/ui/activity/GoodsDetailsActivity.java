@@ -22,14 +22,17 @@ import cn.ucai.fulicenter.model.net.GoodsModel;
 import cn.ucai.fulicenter.model.net.IGoodsModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
 import cn.ucai.fulicenter.model.utils.CommonUtils;
+import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.ui.view.FlowIndicator;
 import cn.ucai.fulicenter.ui.view.MFGT;
 import cn.ucai.fulicenter.ui.view.SlideAutoLoopView;
 
 public class GoodsDetailsActivity extends AppCompatActivity {
+    private static final String TAG = GoodsDetailsActivity.class.getSimpleName();
     int goodsId = 0;
     IGoodsModel modle;
     GoodsDetailsBean bean;
+    boolean isCollects;
     @BindView(R.id.backClickArea)
     LinearLayout mbackClickArea;
     @BindView(R.id.tv_common_title)
@@ -64,7 +67,6 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     RelativeLayout mlayoutBanner;
     @BindView(R.id.activity_goods_detail)
     RelativeLayout mactivityGoodsDetail;
-
 
 
     @Override
@@ -110,26 +112,42 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     private void loadCollectStatus() {
         User user = FuLiCenterApplication.getCurrentUser();
         if (user != null) {
-            modle.loadCollectStatus(GoodsDetailsActivity.this, goodsId, user.getMuserName(),
-                    new OnCompleteListener<MessageBean>() {
-                        @Override
-                        public void onSuccess(MessageBean msg) {
-                            if (msg != null && msg.isSuccess()) {
-                                setCollectStatus(true);
-                            } else {
-                                setCollectStatus(false);
-                            }
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            setCollectStatus(false);
-                        }
-                    });
+            collectAction(I.ACTION_IS_COLLECT, user);
         }
     }
 
-    private void setCollectStatus(boolean isCollects) {
+    private void collectAction(final int action, User user) {
+        modle.collectAction(GoodsDetailsActivity.this, I.ACTION_IS_COLLECT, goodsId, user.getMuserName(),
+                new OnCompleteListener<MessageBean>() {
+                    @Override
+                    public void onSuccess(MessageBean msg) {
+                        if (msg != null && msg.isSuccess()) {
+                            isCollects = true;
+                            if (action == I.ACTION_DELETE_COLLECT) {
+                                isCollects = false;
+                            }
+                        } else {
+                            isCollects = false;
+                            if (action == I.ACTION_DELETE_COLLECT) {
+                                isCollects = true;
+                            }
+                        }
+                        setCollectStatus();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        L.e(TAG,"error="+error);
+                        if (action == I.ACTION_IS_COLLECT) {
+                            isCollects = false;
+                            setCollectStatus();
+                        }
+
+                    }
+                });
+    }
+
+    private void setCollectStatus() {
         mivGoodCollect.setImageResource(isCollects ?
                 R.mipmap.bg_collect_out : R.mipmap.bg_collect_in);
     }
@@ -165,6 +183,22 @@ public class GoodsDetailsActivity extends AppCompatActivity {
         return null;
     }
 
+    @OnClick(R.id.iv_good_collect)
+    public void collectGoods() {
+        User user = FuLiCenterApplication.getCurrentUser();
+        if (user == null) {
+            MFGT.gotoLogin(GoodsDetailsActivity.this, 0);
+        } else {
+            if (isCollects) {
+                //取消收藏
+                collectAction(I.ACTION_DELETE_COLLECT, user);
+            } else {
+                //添加收藏
+                collectAction(I.ACTION_ADD_COLLECT, user);
+            }
+
+        }
+    }
 
     @OnClick(R.id.backClickArea)
     public void onClick() {
