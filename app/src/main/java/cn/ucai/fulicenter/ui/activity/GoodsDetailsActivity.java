@@ -2,7 +2,6 @@ package cn.ucai.fulicenter.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +34,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     IGoodsModel modle;
     GoodsDetailsBean bean;
     AntiShake util = new AntiShake();
-    boolean isCollects;
+    boolean isCollects=false;
     @BindView(R.id.backClickArea)
     LinearLayout mbackClickArea;
     @BindView(R.id.tv_common_title)
@@ -120,20 +119,28 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     }
 
     private void collectAction(final int action, User user) {
-        modle.collectAction(GoodsDetailsActivity.this, I.ACTION_IS_COLLECT, goodsId, user.getMuserName(),
+        modle.collectAction(GoodsDetailsActivity.this, action, goodsId, user.getMuserName(),
                 new OnCompleteListener<MessageBean>() {
                     @Override
                     public void onSuccess(MessageBean msg) {
                         if (msg != null && msg.isSuccess()) {
-                            isCollects = true;
+//                            isCollects = true;
+//                            if (action == I.ACTION_DELETE_COLLECT) {
+//                                isCollects = false;
+//                            }
+                            isCollects = action == I.ACTION_DELETE_COLLECT ? false : true;
+                            if (action ==I.ACTION_ADD_COLLECT) {
+                                CommonUtils.showShortToast("添加收藏");
+                            }
                             if (action == I.ACTION_DELETE_COLLECT) {
-                                isCollects = false;
+                                CommonUtils.showShortToast("删除收藏");
                             }
                         } else {
-                            isCollects = false;
-                            if (action == I.ACTION_DELETE_COLLECT) {
-                                isCollects = true;
-                            }
+//                            isCollects = false;
+//                            if (action == I.ACTION_DELETE_COLLECT) {
+//                                isCollects = true;
+//                            }
+                            isCollects = action == I.ACTION_IS_COLLECT ? false : isCollects;
                         }
                         setCollectStatus();
                     }
@@ -187,8 +194,8 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.iv_good_collect)
-    public void collectGoods(View view) {
-        if(util.check(view.getId())) return;
+    public void collectGoods() {
+        if(util.check()) return;
         User user = FuLiCenterApplication.getCurrentUser();
         if (user == null) {
             MFGT.gotoLogin(GoodsDetailsActivity.this, 0);
@@ -196,6 +203,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
             if (isCollects) {
                 //取消收藏
                 collectAction(I.ACTION_DELETE_COLLECT, user);
+
             } else {
                 //添加收藏
                 collectAction(I.ACTION_ADD_COLLECT, user);
