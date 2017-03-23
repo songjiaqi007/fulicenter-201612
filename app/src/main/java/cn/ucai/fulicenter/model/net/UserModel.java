@@ -2,7 +2,10 @@ package cn.ucai.fulicenter.model.net;
 
 import android.content.Context;
 
+import java.io.File;
+
 import cn.ucai.fulicenter.application.I;
+import cn.ucai.fulicenter.model.bean.MessageBean;
 import cn.ucai.fulicenter.model.utils.OkHttpUtils;
 
 /**
@@ -13,17 +16,17 @@ public class UserModel implements IUserModel {
 
 
     @Override
-    public void login(Context context, String username,String password, OnCompleteListener<String> listener) {
+    public void login(Context context, String username, String password, OnCompleteListener<String> listener) {
         OkHttpUtils utils = new OkHttpUtils(context);
         utils.setRequestUrl(I.REQUEST_LOGIN)
-                .addParam(I.User.USER_NAME,username)
-                .addParam(I.User.PASSWORD,password)
+                .addParam(I.User.USER_NAME, username)
+                .addParam(I.User.PASSWORD, password)
                 .targetClass(String.class)
                 .execute(listener);
     }
 
     @Override
-    public void register(Context context, String username, String nickname,String password, OnCompleteListener<String> listener) {
+    public void register(Context context, String username, String nickname, String password, OnCompleteListener<String> listener) {
         OkHttpUtils utils = new OkHttpUtils(context);
         utils.setRequestUrl(I.REQUEST_REGISTER)
                 .addParam(I.User.USER_NAME, username)
@@ -31,6 +34,37 @@ public class UserModel implements IUserModel {
                 .addParam(I.User.NICK, nickname)
                 .targetClass(String.class)
                 .post()
+                .execute(listener);
+    }
+
+    @Override
+    public void updateNick(Context context, String username, String newnick, OnCompleteListener<String> listener) {
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_UPDATE_USER_NICK)
+                .addParam(I.User.USER_NAME, username)
+                .addParam(I.User.NICK, newnick)
+                .targetClass(String.class)
+                .execute(listener);
+    }
+
+    @Override
+    public void updateAvatar(Context context, String username, File file, OnCompleteListener<String> listener) {
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_UPDATE_AVATAR)
+                .addParam(I.NAME_OR_HXID,username)
+                .addParam(I.AVATAR_TYPE,I.AVATAR_TYPE_USER_PATH)
+                .addFile2(file)
+                .targetClass(String.class)
+                .post()
+                .execute(listener);
+    }
+
+    @Override
+    public void loadCollectsCount(Context context, String username, OnCompleteListener<MessageBean> listener) {
+        OkHttpUtils<MessageBean> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_FIND_COLLECT_COUNT)
+                .addParam(I.Collect.USER_NAME,username)
+                .targetClass(MessageBean.class)
                 .execute(listener);
     }
 }

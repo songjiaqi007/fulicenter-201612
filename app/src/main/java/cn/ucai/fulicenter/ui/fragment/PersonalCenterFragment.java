@@ -14,7 +14,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
+import cn.ucai.fulicenter.model.bean.MessageBean;
 import cn.ucai.fulicenter.model.bean.User;
+import cn.ucai.fulicenter.model.net.OnCompleteListener;
+import cn.ucai.fulicenter.model.net.UserModel;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
 import cn.ucai.fulicenter.ui.view.MFGT;
 
@@ -30,12 +33,14 @@ public class PersonalCenterFragment extends Fragment {
     @BindView(R.id.tv_collect_count)
     TextView mTvCollectCount;
     User mUser;
+    UserModel mModel;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_personal_center, container, false);
         ButterKnife.bind(this, view);
+        mModel = new UserModel();
         return view;
     }
 
@@ -43,6 +48,8 @@ public class PersonalCenterFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initData();
+
+
     }
 
     @Override
@@ -55,13 +62,34 @@ public class PersonalCenterFragment extends Fragment {
         mUser = FuLiCenterApplication.getCurrentUser();
         if (mUser != null) {
             showUserInfo();
+            loadCollectsCount();
         }
+    }
+
+    private void loadCollectsCount() {
+        mModel.loadCollectsCount(getContext(), mUser.getMuserName(),
+                new OnCompleteListener<MessageBean>() {
+                    @Override
+                    public void onSuccess(MessageBean msg) {
+                        if (msg != null && msg.isSuccess()) {
+                            mTvCollectCount.setText(msg.getMsg());
+                        } else {
+                            mTvCollectCount.setText("0");
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        mTvCollectCount.setText("0");
+                    }
+                });
     }
 
 
     private void showUserInfo() {
         mTvUserName.setText(mUser.getMuserNick());
-        ImageLoader.downloadImg(getContext(), mIvUserAvatar, mUser.getAvatar());
+        ImageLoader.setAvatar( mUser.getAvatar(),getContext(), mIvUserAvatar);
     }
 
 
