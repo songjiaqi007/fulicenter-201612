@@ -12,9 +12,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.model.bean.AlbumsBean;
 import cn.ucai.fulicenter.model.bean.GoodsDetailsBean;
+import cn.ucai.fulicenter.model.bean.MessageBean;
+import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.net.GoodsModel;
 import cn.ucai.fulicenter.model.net.IGoodsModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
@@ -63,6 +66,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     RelativeLayout mactivityGoodsDetail;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,56 +78,91 @@ public class GoodsDetailsActivity extends AppCompatActivity {
             return;
         }
         modle = new GoodsModel();
-        initData();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initData();
     }
 
     private void initData() {
-        modle.loadData(GoodsDetailsActivity.this, goodsId, new OnCompleteListener<GoodsDetailsBean>() {
-            @Override
-            public void onSuccess(GoodsDetailsBean result) {
-                if (result != null) {
-                    bean = result;
-                    showDetails(result);
+        if (bean == null) {
+            modle.loadData(GoodsDetailsActivity.this, goodsId, new OnCompleteListener<GoodsDetailsBean>() {
+                @Override
+                public void onSuccess(GoodsDetailsBean result) {
+                    if (result != null) {
+                        bean = result;
+                        showDetails();
+                    }
+
                 }
 
-            }
-
-            @Override
-            public void onError(String error) {
-                CommonUtils.showShortToast(error);
-            }
-        });
+                @Override
+                public void onError(String error) {
+                    CommonUtils.showShortToast(error);
+                }
+            });
+        }
+        loadCollectStatus();
     }
 
-    private void showDetails(GoodsDetailsBean result) {
-        mtvGoodNameEnglish.setText(result.getGoodsEnglishName());
-        mtvGoodName.setText(result.getGoodsName());
-        mtvGoodPriceShop.setText(result.getShopPrice());
-        mtvGoodPriceCurrent.setText(result.getCurrencyPrice());
-        msalv.startPlayLoop(mindicator,getAblumUrl(),getAblumCount());
-        mwvGoodBrief.loadDataWithBaseURL(null,bean.getGoodsBrief(),I.TEXT_HTML,I.UTF_8,null);
+    private void loadCollectStatus() {
+        User user = FuLiCenterApplication.getCurrentUser();
+        if (user != null) {
+            modle.loadCollectStatus(GoodsDetailsActivity.this, goodsId, user.getMuserName(),
+                    new OnCompleteListener<MessageBean>() {
+                        @Override
+                        public void onSuccess(MessageBean msg) {
+                            if (msg != null && msg.isSuccess()) {
+                                setCollectStatus(true);
+                            } else {
+                                setCollectStatus(false);
+                            }
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            setCollectStatus(false);
+                        }
+                    });
+        }
+    }
+
+    private void setCollectStatus(boolean isCollects) {
+        mivGoodCollect.setImageResource(isCollects ?
+                R.mipmap.bg_collect_out : R.mipmap.bg_collect_in);
+    }
+
+
+    private void showDetails() {
+        mtvGoodNameEnglish.setText(bean.getGoodsEnglishName());
+        mtvGoodName.setText(bean.getGoodsName());
+        mtvGoodPriceShop.setText(bean.getShopPrice());
+        mtvGoodPriceCurrent.setText(bean.getCurrencyPrice());
+        msalv.startPlayLoop(mindicator, getAblumUrl(), getAblumCount());
+        mwvGoodBrief.loadDataWithBaseURL(null, bean.getGoodsBrief(), I.TEXT_HTML, I.UTF_8, null);
     }
 
     private int getAblumCount() {
-        if (bean.getProperties()!=null&& bean.getProperties().length>0) {
+        if (bean.getProperties() != null && bean.getProperties().length > 0) {
             return bean.getProperties()[0].getAlbums().length;
         }
         return 0;
     }
 
     private String[] getAblumUrl() {
-        if (bean.getProperties()!=null&& bean.getProperties().length>0) {
+        if (bean.getProperties() != null && bean.getProperties().length > 0) {
             AlbumsBean[] albums = bean.getProperties()[0].getAlbums();
-            if (albums!=null&& albums.length>0) {
+            if (albums != null && albums.length > 0) {
                 String[] urls = new String[albums.length];
-                for (int i=0;i<albums.length;i++) {
+                for (int i = 0; i < albums.length; i++) {
                     urls[i] = albums[0].getImgUrl();
                 }
                 return urls;
             }
         }
-        return  null;
+        return null;
     }
 
 
