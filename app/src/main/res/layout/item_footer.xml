@@ -3,7 +3,7 @@
     android:id="@+id/tvFooter"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:text="刷新中。。。"
+    android:text="加载更多数据"
     android:textSize="18sp"
     android:gravity="center_horizontal"
     android:visibility="gone">

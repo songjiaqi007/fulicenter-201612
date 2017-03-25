@@ -1,5 +1,6 @@
 package cn.ucai.fulicenter.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +54,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setFooterText(String footerText) {
         this.footerText = footerText;
+        notifyDataSetChanged();
     }
 
     public boolean isMore() {
@@ -80,6 +82,14 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1) {
+            return I.TYPE_FOOTER;
+        }
+        return I.TYPE_ITEM;
+    }
+
+    @Override
     public void onBindViewHolder(RecyclerView.ViewHolder parentHolder, int position) {
         if (getItemViewType(position) == I.TYPE_FOOTER) {
             FooterHolder holder = (FooterHolder) parentHolder;
@@ -96,7 +106,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return mList == null ? 0 : mList.size();
+        return mList == null ? 0 : mList.size() + 1;
     }
 
     public void initData(ArrayList<CollectBean> list) {
@@ -137,8 +147,8 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     Log.d("mingYue", "onClick: +++++++++++");
-                    context.startActivity(new Intent(context, GoodsDetailsActivity.class)
-                            .putExtra(I.Goods.KEY_GOODS_ID, bean.getGoodsId()));
+                    ((Activity) context).startActivityForResult(new Intent(context, GoodsDetailsActivity.class)
+                            .putExtra(I.Goods.KEY_GOODS_ID, bean.getGoodsId()), I.REQUEST_CODE_COLLECT);
 
                 }
             });
@@ -151,7 +161,7 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mModel.deleteCollect(context, username, goods.getGoodsId(), new OnCompleteListener<CollectBean>() {
                 @Override
                 public void onSuccess(CollectBean result) {
-                    if (result != null ) {
+                    if (result != null) {
                         mList.remove(goods);
                         notifyDataSetChanged();
                     } else {
@@ -180,7 +190,6 @@ public class CollectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         }
     }
-
 
 
 }

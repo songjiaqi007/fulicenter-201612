@@ -19,6 +19,7 @@ import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.ui.fragment.BoutiqueFragment;
+import cn.ucai.fulicenter.ui.fragment.CartFragment;
 import cn.ucai.fulicenter.ui.fragment.CategoryFragment;
 import cn.ucai.fulicenter.ui.fragment.NewGoodsFragment;
 import cn.ucai.fulicenter.ui.fragment.PersonalCenterFragment;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     BoutiqueFragment mBoutiqueFragment;
     CategoryFragment mCategoryFragment;
     PersonalCenterFragment mPersonalCenterFragment;
+    CartFragment mCartFragment;
     RadioButton[] mRadioButtons;
 
 
@@ -86,10 +88,12 @@ public class MainActivity extends AppCompatActivity {
         mNewGoodsFragment = new NewGoodsFragment();
         mBoutiqueFragment = new BoutiqueFragment();
         mCategoryFragment = new CategoryFragment();
+        mCartFragment = new CartFragment();
         mPersonalCenterFragment = new PersonalCenterFragment();
         mFragments[0] = mNewGoodsFragment;
         mFragments[1] = mBoutiqueFragment;
         mFragments[2] = mCategoryFragment;
+        mFragments[3] = mCartFragment;
         mFragments[4] = mPersonalCenterFragment;
     }
 
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.cart:
                 if (FuLiCenterApplication.getCurrentUser() == null) {
+                    MFGT.gotoLogin(MainActivity.this,I.REQUEST_CODE_LOGIN_FROM_CART);
                 } else {
                     index = 3;
                 }
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.hide(mFragments[currentIndex]);
             if (!mFragments[index].isAdded()) {
-                fragmentTransaction.add(R.id.fl, mFragments[index]);
+                fragmentTransaction.add(R.id.fl , mFragments[index]);
             }
             fragmentTransaction.show(mFragments[index]).commitAllowingStateLoss();
             currentIndex = index;
