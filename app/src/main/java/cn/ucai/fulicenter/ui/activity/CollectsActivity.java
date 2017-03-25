@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
@@ -30,6 +31,7 @@ import cn.ucai.fulicenter.model.utils.ConvertUtils;
 import cn.ucai.fulicenter.model.utils.ImageLoader;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.ui.adapter.CollectsAdapter;
+import cn.ucai.fulicenter.ui.view.MFGT;
 import cn.ucai.fulicenter.ui.view.SpaceItemDecoration;
 
 import static cn.ucai.fulicenter.application.I.ACTION_DOWNLOAD;
@@ -80,6 +82,7 @@ public class CollectsActivity extends AppCompatActivity {
                             ArrayList<CollectBean> list = ConvertUtils.array2List(result);
                             if (action == I.ACTION_DOWNLOAD || action == I.ACTION_PULL_DOWN) {
                                 mAdapter.initData(list);
+                                mAdapter.setFooterText("没有更多数据加载");
                             } else {
                                 mAdapter.addData(list);
                             }
@@ -187,6 +190,25 @@ public class CollectsActivity extends AppCompatActivity {
         super.onDestroy();
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
+        }
+    }
+
+    @OnClick(R.id.backClickArea)
+    public void backArea() {
+        MFGT.finish(CollectsActivity.this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK && requestCode==I.REQUEST_CODE_COLLECT) {
+            boolean isCollected = data.getBooleanExtra(I.GoodsDetails.KEY_IS_COLLECTED, true);
+            int goodsId = data.getIntExtra(I.GoodsDetails.KEY_GOODS_ID, 0);
+            if (!isCollected) {
+                // update adapter
+                mList.remove(new CollectBean(goodsId));
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

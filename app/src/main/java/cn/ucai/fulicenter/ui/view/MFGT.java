@@ -54,8 +54,8 @@ public class MFGT {
 
 
     public static void gotoDetails(Context activity, int goodsId) {
-        activity.startActivity(new Intent(activity, GoodsDetailsActivity.class)
-        .putExtra(I.Goods.KEY_GOODS_ID,goodsId));
+       startActivityForResult((Activity) activity,new Intent(activity, GoodsDetailsActivity.class)
+        .putExtra(I.Goods.KEY_GOODS_ID,goodsId),I.REQUEST_CODE_COLLECT);
     }
 
     public static void gotoCategoryChild(Context activity, int catId, String groupName,

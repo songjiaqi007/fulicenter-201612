@@ -19,7 +19,9 @@ import cn.ucai.fulicenter.model.bean.AlbumsBean;
 import cn.ucai.fulicenter.model.bean.GoodsDetailsBean;
 import cn.ucai.fulicenter.model.bean.MessageBean;
 import cn.ucai.fulicenter.model.bean.User;
+import cn.ucai.fulicenter.model.net.CartModel;
 import cn.ucai.fulicenter.model.net.GoodsModel;
+import cn.ucai.fulicenter.model.net.ICartModel;
 import cn.ucai.fulicenter.model.net.IGoodsModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
 import cn.ucai.fulicenter.model.utils.AntiShake;
@@ -33,9 +35,10 @@ public class GoodsDetailsActivity extends AppCompatActivity {
     private static final String TAG = GoodsDetailsActivity.class.getSimpleName();
     int goodsId = 0;
     IGoodsModel modle;
+    ICartModel mCartModel;
     GoodsDetailsBean bean;
     AntiShake util = new AntiShake();
-    boolean isCollects=false;
+    boolean isCollects = false;
     @BindView(R.id.backClickArea)
     LinearLayout mbackClickArea;
     @BindView(R.id.tv_common_title)
@@ -83,6 +86,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
             return;
         }
         modle = new GoodsModel();
+        mCartModel = new CartModel();
 
 
     }
@@ -132,7 +136,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
 //                                isCollects = false;
 //                            }
                             isCollects = action == I.ACTION_DELETE_COLLECT ? false : true;
-                            if (action ==I.ACTION_ADD_COLLECT) {
+                            if (action == I.ACTION_ADD_COLLECT) {
                                 CommonUtils.showShortToast("添加收藏");
                             }
                             if (action == I.ACTION_DELETE_COLLECT) {
@@ -152,7 +156,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(String error) {
-                        L.e(TAG,"error="+error);
+                        L.e(TAG, "error=" + error);
                         if (action == I.ACTION_IS_COLLECT) {
                             isCollects = false;
                             setCollectStatus();
@@ -200,7 +204,7 @@ public class GoodsDetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.iv_good_collect)
     public void collectGoods() {
-        if(util.check()) return;
+        if (util.check()) return;
         User user = FuLiCenterApplication.getCurrentUser();
         if (user == null) {
             MFGT.gotoLogin(GoodsDetailsActivity.this, 0);
@@ -217,10 +221,60 @@ public class GoodsDetailsActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.backClickArea)
-    public void onClick() {
-        MFGT.finish(GoodsDetailsActivity.this);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        L.e(TAG,"onDestroy,isCollects="+isCollects);
     }
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        backClick();
+    }
+
+
+
+    @OnClick(R.id.backClickArea)
+    public void backClick() {
+        setResult(RESULT_OK, new Intent()
+                .putExtra(I.GoodsDetails.KEY_IS_COLLECTED, isCollects)
+                .putExtra(I.GoodsDetails.KEY_GOODS_ID,goodsId));
+        MFGT.finish(GoodsDetailsActivity.this);
+    }
+
+    @OnClick(R.id.iv_good_cart)
+    public void addCart() {
+        if (util.check()) return;
+        User user = FuLiCenterApplication.getCurrentUser();
+        if (user == null) {
+            MFGT.gotoLogin(GoodsDetailsActivity.this, 0);
+        }else {
+            addGoodsToCart(user);
+        }
+    }
+
+    private void addGoodsToCart(User user) {
+        mCartModel.catrAction(GoodsDetailsActivity.this, I.ACTION_CART_ADD, null, String.valueOf(goodsId),
+                user.getMuserName(), 1, new OnCompleteListener<MessageBean>() {
+                    @Override
+                    public void onSuccess(MessageBean result) {
+                        if (result!=null && result.isSuccess()) {
+                            CommonUtils.showShortToast(R.string.add_goods_success);
+                        }else {
+                            CommonUtils.showShortToast(R.string.add_goods_fail);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        CommonUtils.showShortToast(R.string.add_goods_fail);
+                        L.e(TAG,"addGoodsToCart,error="+error);
+                    }
+                });
+    }
 }
+
+
+
