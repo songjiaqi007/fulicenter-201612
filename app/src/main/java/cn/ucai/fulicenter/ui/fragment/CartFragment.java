@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
 import cn.ucai.fulicenter.application.I;
@@ -31,9 +32,11 @@ import cn.ucai.fulicenter.model.bean.User;
 import cn.ucai.fulicenter.model.net.CartModel;
 import cn.ucai.fulicenter.model.net.ICartModel;
 import cn.ucai.fulicenter.model.net.OnCompleteListener;
+import cn.ucai.fulicenter.model.utils.CommonUtils;
 import cn.ucai.fulicenter.model.utils.L;
 import cn.ucai.fulicenter.model.utils.ResultUtils;
 import cn.ucai.fulicenter.ui.adapter.CartAdapter;
+import cn.ucai.fulicenter.ui.view.MFGT;
 import cn.ucai.fulicenter.ui.view.SpaceItemDecoration;
 
 
@@ -64,8 +67,10 @@ public class CartFragment extends Fragment {
     @BindView(R.id.layout_cart)
     RelativeLayout mLayoutCart;
     updateCartReceiver mReceiver;
-    String cartIds="";
+    String cartIds = "";
     Context mContext;
+    int sumPrice = 0;
+    int rankPrice = 0;
 
 
     @Nullable
@@ -91,7 +96,7 @@ public class CartFragment extends Fragment {
         setPullDownListener();
         IntentFilter filter = new IntentFilter(I.BROADCAST_UPDATA_CART);
         mReceiver = new updateCartReceiver();
-        mContext.registerReceiver(mReceiver,filter);
+        mContext.registerReceiver(mReceiver, filter);
         adapter.setListener(mOnCheckedChangeListener);
     }
 
@@ -149,7 +154,6 @@ public class CartFragment extends Fragment {
     }
 
 
-
     private void initData() {
         user = FuLiCenterApplication.getCurrentUser();
         if (user != null) {
@@ -185,24 +189,24 @@ public class CartFragment extends Fragment {
                 });
     }
 
-    private void setPriceText(){
-        int sumPrice = 0;
-        int rankPrice = 0;
-        for (CartBean cart:cartList){
-            if (cart.isChecked()){
+    private void setPriceText() {
+        sumPrice = 0;
+        rankPrice = 0;
+        for (CartBean cart : cartList) {
+            if (cart.isChecked()) {
                 GoodsDetailsBean goods = cart.getGoods();
-                if (goods!=null){
-                    sumPrice += getPrice(goods.getCurrencyPrice())*cart.getCount();
-                    rankPrice += getPrice(goods.getRankPrice())*cart.getCount();
+                if (goods != null) {
+                    sumPrice += getPrice(goods.getCurrencyPrice()) * cart.getCount();
+                    rankPrice += getPrice(goods.getRankPrice()) * cart.getCount();
                 }
             }
         }
-        mTvCartSumPrice.setText("合计：￥"+sumPrice);
-        mTvCartSavePrice.setText("节省：￥"+(sumPrice-rankPrice));
+        mTvCartSumPrice.setText("合计：￥" + sumPrice);
+        mTvCartSavePrice.setText("节省：￥" + (sumPrice - rankPrice));
     }
 
-    private int getPrice(String p){
-        String pStr = p.substring(p.indexOf("￥")+1);
+    private int getPrice(String p) {
+        String pStr = p.substring(p.indexOf("￥") + 1);
         return Integer.valueOf(pStr);
     }
 
@@ -210,16 +214,16 @@ public class CartFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            L.e(TAG,"updateCartReceiver...");
+            L.e(TAG, "updateCartReceiver...");
             setPriceText();
-            setCartListLayut(cartList!=null&&cartList.size()>0);
+            setCartListLayut(cartList != null && cartList.size() > 0);
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mReceiver!=null){
+        if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
         }
     }
@@ -227,8 +231,17 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        L.e(TAG,"onResume.......");
+        L.e(TAG, "onResume.......");
         initData();
+    }
+
+    @OnClick(R.id.tv_cart_buy)
+    public void buy() {
+        if (sumPrice>0) {
+            MFGT.gotoOrder(getActivity(),rankPrice);
+        } else {
+            CommonUtils.showShortToast(R.string.order_nothing);
+        }
     }
 
 }
