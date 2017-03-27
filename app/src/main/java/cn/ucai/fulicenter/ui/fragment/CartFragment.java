@@ -164,8 +164,9 @@ public class CartFragment extends Fragment {
                     public void onSuccess(CartBean[] result) {
                         setRefresh(false);
                         setCartListLayut(true);
+                        cartList.clear();
+                        setPriceText();
                         if (result != null) {
-                            cartList.clear();
                             if (result.length > 0) {
                                 ArrayList<CartBean> list = ResultUtils.array2List(result);
                                 cartList.addAll(list);
