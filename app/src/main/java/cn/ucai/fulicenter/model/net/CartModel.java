@@ -7,8 +7,6 @@ import cn.ucai.fulicenter.model.bean.CartBean;
 import cn.ucai.fulicenter.model.bean.MessageBean;
 import cn.ucai.fulicenter.model.utils.OkHttpUtils;
 
-import static cn.ucai.fulicenter.R.attr.count;
-
 /**
  * Created by liuning on 2017/3/24.
  */
@@ -25,7 +23,7 @@ public class CartModel implements ICartModel {
 
     @Override
     public void catrAction(Context context, int action, String cartId, String goodsId,
-                           String username, int Count, OnCompleteListener<MessageBean> listener) {
+                           String username, int count, OnCompleteListener<MessageBean> listener) {
         OkHttpUtils<MessageBean> utils = new OkHttpUtils<>(context);
         if (action == I.ACTION_CART_ADD) {
             addCart(utils, username, goodsId, listener);
@@ -51,7 +49,7 @@ public class CartModel implements ICartModel {
     private void delCart(OkHttpUtils<MessageBean> utils, String cartId,
                          OnCompleteListener<MessageBean> listener) {
         utils.setRequestUrl(I.REQUEST_DELETE_CART)
-                .addParam(I.Cart.ID, cartId)
+                .addParam(I.Cart.ID, String.valueOf(cartId))
                 .targetClass(MessageBean.class)
                 .execute(listener);
 
@@ -67,4 +65,5 @@ public class CartModel implements ICartModel {
                 .targetClass(MessageBean.class)
                 .execute(listener);
     }
+
 }

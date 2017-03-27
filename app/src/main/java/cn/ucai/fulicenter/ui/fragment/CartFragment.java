@@ -1,5 +1,9 @@
 package cn.ucai.fulicenter.ui.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.application.FuLiCenterApplication;
+import cn.ucai.fulicenter.application.I;
 import cn.ucai.fulicenter.model.bean.CartBean;
 import cn.ucai.fulicenter.model.bean.GoodsDetailsBean;
 import cn.ucai.fulicenter.model.bean.User;
@@ -58,12 +63,16 @@ public class CartFragment extends Fragment {
     CartAdapter adapter;
     @BindView(R.id.layout_cart)
     RelativeLayout mLayoutCart;
+    updateCartReceiver mReceiver;
+    String cartIds="";
+    Context mContext;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+        mContext = getActivity();
         ButterKnife.bind(this, view);
         return view;
     }
@@ -80,6 +89,9 @@ public class CartFragment extends Fragment {
 
     private void setListener() {
         setPullDownListener();
+        IntentFilter filter = new IntentFilter(I.BROADCAST_UPDATA_CART);
+        mReceiver = new updateCartReceiver();
+        mContext.registerReceiver(mReceiver,filter);
         adapter.setListener(mOnCheckedChangeListener);
     }
 
@@ -136,6 +148,8 @@ public class CartFragment extends Fragment {
         setPriceText();
     }
 
+
+
     private void initData() {
         user = FuLiCenterApplication.getCurrentUser();
         if (user != null) {
@@ -189,6 +203,31 @@ public class CartFragment extends Fragment {
     private int getPrice(String p){
         String pStr = p.substring(p.indexOf("￥")+1);
         return Integer.valueOf(pStr);
+    }
+
+    class updateCartReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            L.e(TAG,"updateCartReceiver...");
+            setPriceText();
+            setCartListLayut(cartList!=null&&cartList.size()>0);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mReceiver!=null){
+            mContext.unregisterReceiver(mReceiver);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        L.e(TAG,"onResume.......");
+        initData();
     }
 
 }
