@@ -99,18 +99,17 @@ public class OrderActivity extends AppCompatActivity {
         }
 
 
-        String mobile = mEdOrderName.getText().toString();
-        if (TextUtils.isEmpty(mobile)) {
+        String mobile=mEdOrderPhone.getText().toString();
+        if(TextUtils.isEmpty(mobile)){
             mEdOrderPhone.setError("手机号码不能为空");
             mEdOrderPhone.requestFocus();
             return;
         }
-/*
-        if (!mobile.matches("[\\d]{11}")) {
+        if(!mobile.matches("[\\d]{11}")){
             mEdOrderPhone.setError("手机号码格式错误");
             mEdOrderPhone.requestFocus();
             return;
-        }*/
+        }
 
         String area = mSpinOrderProvince.getSelectedItem().toString();
         if (TextUtils.isEmpty(area)) {
