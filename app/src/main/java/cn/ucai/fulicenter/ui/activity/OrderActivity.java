@@ -61,7 +61,7 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.backClickArea)
-    public void onClick() {
+    public void backArea() {
         MFGT.finish(OrderActivity.this);
     }
 
@@ -100,6 +100,4 @@ public class OrderActivity extends AppCompatActivity {
             return;
         }
     }
-
-
 }
